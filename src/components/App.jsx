@@ -1,13 +1,28 @@
-import { useState } from 'react'
-import './App.scss'
+import { Component, useState } from 'react'
+// import getImages from '../scripts/getImages'
+import SearchBar from './SearchBar'
+import ModalWindow from './Modal'
 
-function App() {
+class App extends Component {
+	state = {
+		query: ''
+	}
 
-  return (
-    <>
-      
-    </>
-  )
+	onSearchSubmit = (query) => {
+		console.log(query)
+		this.setState({
+			query: query
+		})
+	}
+
+	render() {
+		return (
+			<>
+				<SearchBar onSubmit={this.onSearchSubmit} />
+				{/* <ModalWindow /> */}
+			</>
+		)
+	}
 }
 
 export default App
