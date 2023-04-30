@@ -1,11 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { ButtonWrapper } from './Button.styled'
+import { LoadMore } from './Button.styled'
 
-const Button = () => (
-    <button>
-        Load more
-    </button>
+const Button = ({ onLoadMore }) => (
+	<LoadMore><button onClick={() => onLoadMore()}>Load more</button></LoadMore>
 )
 
 Button.propTypes = {}

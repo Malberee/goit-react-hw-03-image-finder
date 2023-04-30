@@ -1,7 +1,9 @@
 import styled from 'styled-components'
 
 export const Header = styled.div`
-	width: 100vh;
+	position: fixed;
+	z-index: 2;
+	width: 100vw;
 	padding: 15px;
 	background-color: #1a1a1a;
 	display: flex;

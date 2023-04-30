@@ -3,8 +3,6 @@ import { FaSearch } from 'react-icons/fa'
 import PropTypes from 'prop-types'
 import { Header, Form, Input, SearchBtn } from './SearchBar.styled'
 
-const API_KEY = '34735495-c5ef181074f4f4736bdb9177b'
-
 class SearchBar extends Component {
 	state = {
 		query: '',
@@ -18,7 +16,7 @@ class SearchBar extends Component {
 
 	onSubmit = (e) => {
 		e.preventDefault()
-		this.props.onSubmit(this.state.query)
+		if(this.state.query.trim() !== '') this.props.onSubmit(this.state.query)
 	}
 
 	render() {
