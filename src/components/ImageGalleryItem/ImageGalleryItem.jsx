@@ -9,7 +9,9 @@ const ImageGalleryItem = ({image, largeImage, showModal}) => (
 )
 
 ImageGalleryItem.propTypes = {
-    image: PropTypes.string.isRequired
+	image: PropTypes.string.isRequired,
+	largeImage: PropTypes.string.isRequired,
+	showModal: PropTypes.func.isRequired
 }
 
 ImageGalleryItem.defaultProps = {}
