@@ -8,55 +8,23 @@ import Loader from '../Loader'
 import Button from '../Button'
 import Modal from '../Modal'
 
-class ImageGallery extends Component {
-	state = {
-		images: [],
-		currentImage: '',
-		isShowModal: false,
-	}
+const ImageGallery = ({ images, toggleModal }) => (
+	<ImageGalleryWrapper>
+		{images.map(({ id, webformatURL, largeImageURL }) => (
+			<ImageGalleryItem
+				key={id}
+				image={webformatURL}
+				largeImage={largeImageURL}
+				toggleModal={toggleModal}
+			/>
+		))}
+	</ImageGalleryWrapper>
+)
 
-	showModal = (image) => {
-		console.log('show')
-		this.setState({
-			isShowModal: true,
-			currentImage: image,
-			loadedPages: 1,
-		})
-	}
-
-	closeModal = () => {
-		console.log('close')
-		this.setState({
-			isShowModal: false,
-			currentImage: '',
-		})
-	}
-
-	render() {
-		return (
-			<>
-				<ImageGalleryWrapper>
-					{this.props.images.map(({ id, webformatURL, largeImageURL }) => (
-						<ImageGalleryItem
-							key={id}
-							image={webformatURL}
-							largeImage={largeImageURL}
-							showModal={this.showModal}
-						/>
-					))}
-					{this.state.isShowModal && (
-						<Modal image={this.state.currentImage} onClose={this.closeModal} />
-					)}
-				</ImageGalleryWrapper>
-
-				{this.props.isLoading && <Loader />}
-				<Button onLoadMore={() => this.props.onLoadMore()} />
-			</>
-		)
-	}
+ImageGallery.propTypes = {
+	images: PropTypes.array.isRequired,
+	toggleModal: PropTypes.func.isRequired,
 }
-
-ImageGallery.propTypes = {}
 
 ImageGallery.defaultProps = {}
 

@@ -2,8 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { GalleryItem, Image } from './ImageGalleryItem.styled'
 
-const ImageGalleryItem = ({image, largeImage, showModal}) => (
-	<GalleryItem onClick={() => showModal(largeImage)}>
+const ImageGalleryItem = ({image, largeImage, toggleModal}) => (
+	<GalleryItem onClick={() => toggleModal(largeImage)}>
 		<Image src={image} alt="" />
 	</GalleryItem>
 )
@@ -11,7 +11,7 @@ const ImageGalleryItem = ({image, largeImage, showModal}) => (
 ImageGalleryItem.propTypes = {
 	image: PropTypes.string.isRequired,
 	largeImage: PropTypes.string.isRequired,
-	showModal: PropTypes.func.isRequired
+	toggleModal: PropTypes.func.isRequired
 }
 
 ImageGalleryItem.defaultProps = {}

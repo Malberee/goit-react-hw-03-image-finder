@@ -1,30 +1,41 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
+import { createPortal } from 'react-dom'
 import PropTypes from 'prop-types'
 import { Overlay, ModalWindow, Image } from './Modal.styled'
 
+const modalRoot = document.querySelector('#modal-root')
+
 class Modal extends Component {
 	componentDidMount() {
-		window.addEventListener('keydown', e => {
-			if (e.keyCode === 27) {
-				this.props.onClose()
-			}
-		})
+		window.addEventListener('keydown', this.onEscape)
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener('keydown', this.onEscape)
+	}
+
+	onEscape = (e) => {
+		if (e.code === 'Escape') {
+			this.props.toggleModal()
+		}
 	}
 
 	render() {
-		return (
-			<Overlay onClick={this.props.onClose}>
+		const { toggleModal, image } = this.props
+		return createPortal(
+			<Overlay onClick={toggleModal}>
 				<ModalWindow onClick={(e) => e.stopPropagation()}>
-					<Image src={this.props.image} alt="" />
+					<Image src={image} alt="" />
 				</ModalWindow>
-			</Overlay>
+			</Overlay>,
+			modalRoot
 		)
 	}
 }
 
 Modal.propTypes = {
 	image: PropTypes.string.isRequired,
-	onClose: PropTypes.func.isRequired
+	toggleModal: PropTypes.func.isRequired,
 }
 
 Modal.defaultProps = {}

@@ -2,14 +2,41 @@ import { Component, useState } from 'react'
 import getImages from '../scripts/getImages'
 import SearchBar from './SearchBar'
 import ImageGallery from './ImageGallery'
-import ModalWindow from './Modal'
+import Loader from './Loader'
+import Button from './Button'
+import Modal from './Modal'
 
 class App extends Component {
 	state = {
+		query: '',
 		isLoading: false,
-		lastQuery: '',
 		images: [],
-		loadedPages: 1,
+		currentImage: '',
+		isShowModal: false,
+		loadPages: 1,
+	}
+
+	componentDidUpdate = async (_, prevState) => {
+		const { loadPages, query } = this.state
+		if (loadPages !== prevState.loadPages || query !== prevState.query) {
+			try {
+				this.toggleLoading()
+				console.log(this.state.isLoading)
+				await getImages(query, loadPages).then(({ data: { hits } }) => {
+					this.setState((prevState) => {
+						return {
+							images: loadPages > 1 ? [...prevState.images, ...hits] : hits,
+						}
+					})
+				})
+			} catch (err) {
+				console.log(err)
+			} finally {
+				this.toggleLoading()
+				console.log(this.state.images)
+				console.log(this.state.isLoading)
+			}
+		}
 	}
 
 	toggleLoading = () => {
@@ -20,63 +47,48 @@ class App extends Component {
 		})
 	}
 
-	onSearchSubmit = async (query) => {
-		try {
-			this.toggleLoading()
-			console.log(this.state.isLoading)
-			await getImages(query, this.state.loadedPages).then((res) => {
-				this.setState((prevState) => {
-					return {
-						lastQuery: query,
-						images: res.data.hits,
-						loadedPages: prevState.loadedPages + 1,
-					}
-				})
+	toggleModal = (image) => {
+		this.setState((prevState) => {
+			return {
+				currentImage: prevState.currentImage === '' ? image : '',
+				isShowModal: !prevState.isShowModal,
+			}
+		})
+	}
+
+	onSearchSubmit = (query) => {
+		if (query !== this.state.query) {
+			this.setState({
+				query: query,
+				lastQuery: query,
+				images: [],
+				loadPages: 1,
+				isLoading: false,
 			})
-		} catch (err) {
-			console.log(err)
-		} finally {
-			this.toggleLoading()
-			console.log(this.state.images)
-			console.log(this.state.isLoading)
 		}
 	}
 
-	onLoadMore = async () => {
-		try {
-			this.toggleLoading()
-			console.log(this.state.isLoading)
-			await getImages(this.state.lastQuery, this.state.loadedPages).then(
-				(res) => {
-					this.setState((prevState) => {
-						return {
-							images: [...prevState.images, ...res.data.hits],
-							loadedPages: prevState.loadedPages + 1,
-						}
-					})
-				}
-			)
-		} catch (err) {
-			console.log(err)
-		} finally {
-			this.toggleLoading()
-			console.log(this.state.images)
-			console.log(this.state.isLoading)
-		}
+	onLoadMore = () => {
+		this.setState((prevState) => {
+			return {
+				loadPages: prevState.loadPages + 1,
+			}
+		})
 	}
 
 	render() {
+		const { images, isLoading, isShowModal, currentImage } = this.state
 		return (
 			<>
 				<SearchBar onSubmit={this.onSearchSubmit} />
-				{this.state.images.length > 0 && (
-					<ImageGallery
-						isLoading={this.state.isLoading}
-						images={this.state.images}
-						onLoadMore={this.onLoadMore}
-					/>
+				{images.length && (
+					<ImageGallery images={images} toggleModal={this.toggleModal} />
 				)}
-				{this.state.showModal && <Modal image={this.state.currentImage} />}
+				{isLoading && <Loader />}
+				{images.length && !isLoading && <Button onLoadMore={this.onLoadMore} />}
+				{isShowModal && (
+					<Modal image={currentImage} toggleModal={this.toggleModal} />
+				)}
 			</>
 		)
 	}
