@@ -23,7 +23,7 @@ class Modal extends Component {
 	render() {
 		const { toggleModal, image } = this.props
 		return createPortal(
-			<Overlay onClick={toggleModal}>
+			<Overlay onClick={() => toggleModal()}>
 				<ModalWindow onClick={(e) => e.stopPropagation()}>
 					<Image src={image} alt="" />
 				</ModalWindow>

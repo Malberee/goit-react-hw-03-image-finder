@@ -12,8 +12,8 @@ class App extends Component {
 		isLoading: false,
 		images: [],
 		currentImage: '',
-		isShowModal: false,
 		loadPages: 1,
+		totalImages: 0,
 	}
 
 	componentDidUpdate = async (_, prevState) => {
@@ -21,20 +21,17 @@ class App extends Component {
 		if (loadPages !== prevState.loadPages || query !== prevState.query) {
 			try {
 				this.toggleLoading()
-				console.log(this.state.isLoading)
-				await getImages(query, loadPages).then(({ data: { hits } }) => {
-					this.setState((prevState) => {
-						return {
-							images: loadPages > 1 ? [...prevState.images, ...hits] : hits,
-						}
-					})
+				const { hits, totalHits } = await getImages(query, loadPages)
+				this.setState((prevState) => {
+					return {
+						images: [...prevState.images, ...hits],
+						totalImages: totalHits,
+					}
 				})
 			} catch (err) {
 				console.log(err)
 			} finally {
 				this.toggleLoading()
-				console.log(this.state.images)
-				console.log(this.state.isLoading)
 			}
 		}
 	}
@@ -47,12 +44,9 @@ class App extends Component {
 		})
 	}
 
-	toggleModal = (image) => {
-		this.setState((prevState) => {
-			return {
-				currentImage: prevState.currentImage === '' ? image : '',
-				isShowModal: !prevState.isShowModal,
-			}
+	toggleModal = (image = '') => {
+		this.setState({
+			currentImage: image,
 		})
 	}
 
@@ -60,10 +54,9 @@ class App extends Component {
 		if (query !== this.state.query) {
 			this.setState({
 				query: query,
-				lastQuery: query,
 				images: [],
 				loadPages: 1,
-				isLoading: false,
+				totalImages: 0,
 			})
 		}
 	}
@@ -77,7 +70,8 @@ class App extends Component {
 	}
 
 	render() {
-		const { images, isLoading, isShowModal, currentImage } = this.state
+		const { images, isLoading, currentImage, totalImages } = this.state
+		const showButton = images.length !== totalImages && !isLoading
 		return (
 			<>
 				<SearchBar onSubmit={this.onSearchSubmit} />
@@ -85,8 +79,8 @@ class App extends Component {
 					<ImageGallery images={images} toggleModal={this.toggleModal} />
 				)}
 				{isLoading && <Loader />}
-				{images.length && !isLoading && <Button onLoadMore={this.onLoadMore} />}
-				{isShowModal && (
+				{showButton && <Button onLoadMore={this.onLoadMore} />}
+				{currentImage && (
 					<Modal image={currentImage} toggleModal={this.toggleModal} />
 				)}
 			</>
